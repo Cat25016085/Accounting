@@ -1,9 +1,0 @@
-{
-  "dependencies": {
-    "@supabase/supabase-js": "^2.49.4",
-    "bcryptjs": "^3.0.2",
-    "next-connect": "^1.0.0",
-    "postgres": "^3.4.5",
-    "react-hook-form": "^7.55.0"
-  }
-}
