@@ -1,2 +1,12 @@
 # Accounting
 內部收支系統
+//API: https://supabase.com/
+https://ixyohowqjfuzrgalatjp.supabase.co
+
+anon public
+
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml4eW9ob3dxamZ1enJnYWxhdGpwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDM1MzEyODMsImV4cCI6MjA1OTEwNzI4M30.O8NrYmtfVMHwBm3yN-I_KUr5sXgB4ki3C91Z861HzCs
+
+
+service_role secret_key
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml4eW9ob3dxamZ1enJnYWxhdGpwIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc0MzUzMTI4MywiZXhwIjoyMDU5MTA3MjgzfQ.JsN3tDId7CTrfcpzawwVBCDkubenxZ-hsSUISNpKQ_4
