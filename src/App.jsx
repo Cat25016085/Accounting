@@ -1,26 +1,28 @@
+// src/App.jsx
 import { useEffect, useState } from 'react'
 import { supabase } from './lib/supabase'
 
 function App() {
-  const [data, setData] = useState(null)
+  const [status, setStatus] = useState('Connecting...')
 
   useEffect(() => {
-    const fetchData = async () => {
-      const { data, error } = await supabase.from('users').select('*')
-      if (error) {
-        console.error('Supabase Error:', error)
-      } else {
-        setData(data)
+    const testConnection = async () => {
+      try {
+        const { data, error } = await supabase.from('userss').select('*')
+        if (error) throw error
+        setStatus(`Connected! Found ${data.length} records.`)
+      } catch (err) {
+        setStatus('❌ Failed to connect: ' + err.message)
       }
     }
 
-    fetchData()
+    testConnection()
   }, [])
 
   return (
-    <div style={{ padding: '2rem' }}>
-      <h1>Hello Supabase + Vercel</h1>
-      <pre>{JSON.stringify(data, null, 2)}</pre>
+    <div style={{ padding: 20 }}>
+      <h1>Supabase 測試</h1>
+      <p>{status}</p>
     </div>
   )
 }
