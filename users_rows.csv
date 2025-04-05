@@ -1,0 +1,4 @@
+id,name,username,password,role,group_name,created_at
+38f4ee83-df80-4c9e-880f-904a52694b63,測試 總生組員,test1,test1,member,總生組,2025-04-05 06:49:47.324115+00
+72ac0606-37d8-4172-aebd-68e0ee5277a7,測試 總生組長,test,test,leader,總生組,2025-04-05 06:49:19.970766+00
+8dc0e0e5-1730-464f-88d4-c3dde5b6b464,凱貓管理員,kaicat,cat2564812,admin,管理組,2025-04-05 05:14:45.995713+00
