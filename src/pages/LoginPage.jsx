@@ -1,7 +1,9 @@
 import React, { useState } from "react";
 import { supabase } from "../supabase"; // 確保路徑正確
+import { useNavigate } from "react-router-dom"; // 用來跳轉頁面
 
 const LoginPage = () => {
+  const navigate = useNavigate();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -16,7 +18,7 @@ const LoginPage = () => {
     }
 
     try {
-      // 使用 Supabase 查詢用戶名和密碼匹配
+      // 使用 Supabase 查詢用戶名
       const { data, error: fetchError } = await supabase
         .from("users")
         .select("id, username, password, role")
@@ -30,9 +32,10 @@ const LoginPage = () => {
 
       // 檢查密碼是否匹配
       if (data.password === password) {
-        // 登入成功，處理登入邏輯
+        // 登入成功，設置使用者狀態、跳轉頁面
         alert("登入成功!");
-        // 在這裡可以設置使用者狀態、轉導頁面等
+        // 假設登入後要跳轉到報帳頁面
+        navigate("/expense-report"); // 跳轉到報帳頁面
       } else {
         setError("密碼錯誤");
       }
