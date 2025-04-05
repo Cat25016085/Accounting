@@ -35,12 +35,17 @@ const LoginPage = () => {
         // 登入成功，設置使用者狀態、跳轉頁面
         alert("登入成功!");
         // 假設登入後要跳轉到報帳頁面
-        navigate("/expense-report"); // 跳轉到報帳頁面
+        if (data.role === "admin") {
+          navigate("/admin-dashboard");
+        } else {
+          navigate("/activity-selection");
+        } // 根據角色跳轉到不同頁面
       } else {
         setError("密碼錯誤");
       }
-    } catch (err) {
-      setError("發生錯誤，請稍後再試");
+    } catch (error) {
+      console.error("登入失敗:", error);
+      setError("登入失敗，請稍後再試");
     }
   };
 
