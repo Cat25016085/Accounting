@@ -1,61 +1,70 @@
-// src/pages/LoginPage.jsx
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { supabase } from '../supabase';
+import React, { useState } from "react";
+import { supabase } from "../supabase"; // 確保路徑正確
 
 const LoginPage = () => {
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
-  const navigate = useNavigate();
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
 
-  const handleSubmit = async (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
 
-    // 使用 Supabase 進行用戶登入
-    try {
-      const { data, error: loginError } = await supabase.auth.signInWithPassword({
-        email: username,
-        password: password,
-      });
+    // 確認帳號和密碼欄位都不為空
+    if (!username || !password) {
+      setError("請填寫帳號和密碼");
+      return;
+    }
 
-      if (loginError) {
-        setError('登入失敗: ' + loginError.message);
-      } else {
-        // 登入成功，導向首頁
-        navigate('/');
+    try {
+      // 使用 Supabase 查詢用戶名和密碼匹配
+      const { data, error: fetchError } = await supabase
+        .from("users")
+        .select("id, username, password, role")
+        .eq("username", username)
+        .single();
+
+      if (fetchError || !data) {
+        setError("帳號不存在");
+        return;
       }
-    } catch (error) {
-      setError('登入時發生錯誤: ' + error.message);
+
+      // 檢查密碼是否匹配
+      if (data.password === password) {
+        // 登入成功，處理登入邏輯
+        alert("登入成功!");
+        // 在這裡可以設置使用者狀態、轉導頁面等
+      } else {
+        setError("密碼錯誤");
+      }
+    } catch (err) {
+      setError("發生錯誤，請稍後再試");
     }
   };
 
   return (
-    <div className="login-container">
-      <h2>登入</h2>
-      <form onSubmit={handleSubmit}>
-        <div className="input-group">
-          <label htmlFor="username">帳號</label>
+    <div>
+      <h1>登入頁面</h1>
+      <form onSubmit={handleLogin}>
+        <div>
+          <label>帳號：</label>
           <input
-            type="email"
-            id="username"
+            type="text"
             value={username}
             onChange={(e) => setUsername(e.target.value)}
             required
           />
         </div>
-        <div className="input-group">
-          <label htmlFor="password">密碼</label>
+        <div>
+          <label>密碼：</label>
           <input
             type="password"
-            id="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
           />
         </div>
-        {error && <p className="error-message">{error}</p>}
         <button type="submit">登入</button>
+        {error && <p style={{ color: "red" }}>{error}</p>}
       </form>
     </div>
   );
