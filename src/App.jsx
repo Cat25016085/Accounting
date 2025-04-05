@@ -1,18 +1,20 @@
-import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
-import LoginPage from "./pages/LoginPage";
-import ExpenseReportPage from "./pages/ExpenseReportPage";
-import HomePage from "./pages/HomePage";
+// src/App.jsx
+import React from 'react';
+import { Routes, Route } from 'react-router-dom';
+import HomePage from './pages/HomePage';
+import LoginPage from './pages/LoginPage';
+import ExpenseReportPage from './pages/ExpenseReportPage'; // 引入報帳頁面
 
-function App() {
+const App = () => {
   return (
-    <Router>
+    <div>
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/expense-report" element={<ExpenseReportPage />} />
       </Routes>
-    </Router>
+    </div>
   );
-}
+};
 
 export default App;

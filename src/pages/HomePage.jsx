@@ -1,26 +1,31 @@
-    // src/pages/HomePage.jsx
+// src/pages/HomePage.jsx
+import React from "react";
 import { useNavigate } from "react-router-dom";
 
-function HomePage() {
+const HomePage = () => {
   const navigate = useNavigate();
 
-  const handleLogin = () => {
+  const handleLoginRedirect = () => {
     navigate("/login");
   };
 
   return (
-    <div className="flex items-center justify-center h-screen bg-gray-100">
-      <div className="text-center">
-        <h1 className="text-4xl font-bold mb-6">Welcome to Accounting System</h1>
-        <button
-          onClick={handleLogin}
-          className="px-6 py-3 bg-blue-600 text-white rounded-xl shadow hover:bg-blue-700 transition"
-        >
-          登入
-        </button>
-      </div>
+    <div>
+      <h1>歡迎來到報帳系統</h1>
+      <button onClick={handleLoginRedirect}>登入</button>
     </div>
   );
-}
+};
 
 export default HomePage;
+
+// const HomePage = () => {
+//     return (
+//       <div>
+//         <h1>這是首頁</h1>
+//         <p>如果這段文字顯示，表示 HomePage 渲染正常。</p>
+//       </div>
+//     );
+//   };
+  
+//   export default HomePage;
