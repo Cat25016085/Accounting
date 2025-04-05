@@ -5,17 +5,19 @@ import { useNavigate } from "react-router-dom";
 
 const ActivitySelectionPage = () => {
   const [activities, setActivities] = useState([]);
+  const [loading, setLoading] = useState(true); // 用來控制是否正在載入資料
   const navigate = useNavigate();
 
   useEffect(() => {
     const fetchActivities = async () => {
-      // 檢查用戶是否登入
+      // 設定載入狀態為 true
+      setLoading(true);
+
       const { data: { user } } = await supabase.auth.getUser();
-      
       if (!user) {
-        // 用戶未登入，重定向到登入頁面
+        // 如果用戶沒有登入，跳轉到登入頁面
         navigate("/login");
-        return;  // 停止執行後面的程式碼
+        return;
       }
 
       // 查詢活動與權限
@@ -27,9 +29,22 @@ const ActivitySelectionPage = () => {
       if (!error && data) {
         setActivities(data);
       }
+
+      setLoading(false); // 完成後設定為載入完成
     };
 
     fetchActivities();
+
+    // 訂閱登入狀態變更
+    const { data: authListener } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === 'SIGNED_OUT' || !session?.user) {
+        navigate("/login"); // 登出或未登入時跳轉到登入頁面
+      }
+    });
+
+    return () => {
+      authListener?.unsubscribe(); // 清除訂閱
+    };
   }, [navigate]);
 
   const handleEnter = (activityId) => {
@@ -43,6 +58,10 @@ const ActivitySelectionPage = () => {
       alert("你沒有權限管理此活動");
     }
   };
+
+  if (loading) {
+    return <div>Loading...</div>; // 顯示載入中畫面
+  }
 
   return (
     <div className="min-h-screen bg-gray-900 text-white p-8">
