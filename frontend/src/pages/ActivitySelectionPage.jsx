@@ -1,51 +1,43 @@
 // ActivitySelectionPage.jsx
 import React, { useEffect, useState } from "react";
-import { supabase } from "../supabase";
 import { useNavigate } from "react-router-dom";
+import { supabase } from "../supabase"; // 你還是可以使用 Supabase 獲取資料
 
 const ActivitySelectionPage = () => {
   const [activities, setActivities] = useState([]);
-  const [loading, setLoading] = useState(true); // 用來控制是否正在載入資料
+  const [isLoggedIn, setIsLoggedIn] = useState(false); // 用來管理登入狀態
   const navigate = useNavigate();
 
   useEffect(() => {
-    const fetchActivities = async () => {
-      // 設定載入狀態為 true
-      setLoading(true);
+    // 檢查是否登入過
+    const isUserLoggedIn = localStorage.getItem("isLoggedIn"); // 用 localStorage 管理登入狀態
+    if (isUserLoggedIn) {
+      setIsLoggedIn(true);
+      fetchActivities(); // 如果已經登入，就拉取活動資料
+    } else {
+      setIsLoggedIn(false); // 如果未登入，顯示登入頁面
+    }
+  }, []);
 
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) {
-        // 如果用戶沒有登入，跳轉到登入頁面
-        navigate("/login");
-        return;
-      }
+  const fetchActivities = async () => {
+    const { data, error } = await supabase
+      .from("activity_members")
+      .select("activity_id, role, activities (name)");
 
-      // 查詢活動與權限
-      const { data, error } = await supabase
-        .from("activity_members")
-        .select("activity_id, role, activities (name)")
-        .eq("user_id", user.id);
+    if (error) {
+      console.error("活動資料獲取失敗:", error);
+    } else {
+      setActivities(data);
+    }
+  };
 
-      if (!error && data) {
-        setActivities(data);
-      }
+  const handleLogin = () => {
+    // 這裡可以設計你自己的登入邏輯
+    localStorage.setItem("isLoggedIn", "true"); // 記錄登入狀態
+    setIsLoggedIn(true);
+    fetchActivities(); // 登入後拉取活動資料
+  };
 
-      setLoading(false); // 完成後設定為載入完成
-    };
-
-    fetchActivities();
-
-    // 訂閱登入狀態變更
-    const { data: authListener } = supabase.auth.onAuthStateChange((event, session) => {
-      if (event === 'SIGNED_OUT' || !session?.user) {
-        navigate("/login"); // 登出或未登入時跳轉到登入頁面
-      }
-    });
-
-    return () => {
-      authListener?.unsubscribe(); // 清除訂閱
-    };
-  }, [navigate]);
 
   const handleEnter = (activityId) => {
     navigate(`/expense/${activityId}`);
@@ -59,8 +51,18 @@ const ActivitySelectionPage = () => {
     }
   };
 
-  if (loading) {
-    return <div>Loading...</div>; // 顯示載入中畫面
+  if (!isLoggedIn) {
+    return (
+      <div className="min-h-screen bg-gray-900 text-white p-8">
+        <h1 className="text-2xl mb-4 font-bold">登入</h1>
+        <button
+          onClick={handleLogin}
+          className="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded"
+        >
+          登入
+        </button>
+      </div>
+    );
   }
 
   return (
