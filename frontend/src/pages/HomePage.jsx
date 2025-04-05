@@ -11,7 +11,7 @@ const HomePage = () => {
 
   return (
     <div>
-      <h1>歡迎來到報帳系統</h1>
+      <h1>歡迎來到核銷系統</h1>
       <button onClick={handleLoginRedirect}>登入</button>
     </div>
   );
