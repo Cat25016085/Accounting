@@ -20,16 +20,27 @@ const ActivitySelectionPage = () => {
   }, []);
 
   const fetchActivities = async () => {
+    const userId = localStorage.getItem("userId");
+  
+    if (!userId) {
+      console.error("找不到使用者 ID，請重新登入");
+      setIsLoggedIn(false);
+      return;
+    }
+  
     const { data, error } = await supabase
       .from("activity_members")
-      .select("activity_id, role, activities (name)");
-
+      .select("activity_id, role, activities (name)")
+      .eq("user_id", userId);
+  
     if (error) {
       console.error("活動資料獲取失敗:", error);
     } else {
       setActivities(data);
     }
   };
+  
+  
 
   const handleLogin = () => {
     // 這裡可以設計你自己的登入邏輯

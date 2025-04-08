@@ -14,24 +14,36 @@ const CreateActivityPage = () => {
 
   const navigate = useNavigate();
 
+  // 取得所有使用者資料
   useEffect(() => {
-    // 取得所有使用者資料來讓選擇 Leader 跟 成員
     const fetchUsers = async () => {
-      const { data, error } = await supabase.from("users").select("id, name, username, organization");
-      if (!error) setMembers(data);
+      const { data, error } = await supabase
+        .from("users")
+        .select("id, name, username, role, group_name");
+
+      if (error) {
+        console.error("🚨 抓取使用者失敗:", error.message);
+      } else {
+        console.log("✅ 抓到使用者：", data);
+        setMembers(data);
+      }
     };
+
     fetchUsers();
   }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // 1. 建立活動
+    // 自動設定 organization 為 leader 的 group_name
+    const leaderInfo = members.find((user) => user.id === leaderId);
+    const leaderGroup = leaderInfo?.group_name || "";
+
     const { data: activity, error: activityError } = await supabase
       .from("activities")
       .insert({
         activity_name: activityName,
-        organization,
+        organization: leaderGroup,
         leader_id: leaderId,
         deadline,
         description,
@@ -46,7 +58,6 @@ const CreateActivityPage = () => {
       return;
     }
 
-    // 2. 新增成員（包含 Leader）
     const memberEntries = [
       { activity_id: activity.id, user_id: leaderId, role: "leader" },
       ...selectedMembers
@@ -54,10 +65,16 @@ const CreateActivityPage = () => {
         .map((id) => ({ activity_id: activity.id, user_id: id, role: "member" })),
     ];
 
-    await supabase.from("activity_members").insert(memberEntries);
+    const { error: insertError } = await supabase
+      .from("activity_members")
+      .insert(memberEntries);
 
-    alert("活動建立成功！");
-    navigate("/"); // 或導向活動列表頁
+    if (insertError) {
+      alert("新增成員失敗：" + insertError.message);
+    } else {
+      alert("活動建立成功！");
+      navigate("/");
+    }
   };
 
   return (
@@ -79,16 +96,6 @@ const CreateActivityPage = () => {
         </div>
 
         <div>
-          <label className="block">所屬組織</label>
-          <input
-            className="w-full p-2 bg-gray-700 rounded"
-            value={organization}
-            onChange={(e) => setOrganization(e.target.value)}
-            required
-          />
-        </div>
-
-        <div>
           <label className="block">活動負責人 (Leader)</label>
           <select
             className="w-full p-2 bg-gray-700 rounded"
@@ -97,11 +104,13 @@ const CreateActivityPage = () => {
             required
           >
             <option value="">請選擇</option>
-            {members.map((user) => (
-              <option key={user.id} value={user.id}>
-                {user.name} ({user.username})
-              </option>
-            ))}
+            {members
+              .filter((user) => user.role === "leader")
+              .map((user) => (
+                <option key={user.id} value={user.id}>
+                  {user.name} ({user.username} / {user.group_name})
+                </option>
+              ))}
           </select>
         </div>
 
@@ -137,7 +146,7 @@ const CreateActivityPage = () => {
           >
             {members.map((user) => (
               <option key={user.id} value={user.id}>
-                {user.name} ({user.username})
+                {user.name} ({user.username} / {user.group_name})
               </option>
             ))}
           </select>
